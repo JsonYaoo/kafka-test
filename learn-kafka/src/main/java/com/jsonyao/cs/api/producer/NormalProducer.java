@@ -71,7 +71,7 @@ public class NormalProducer {
             }
         });
 
-        System.err.println("quickstart producer send....");
+        System.err.println("normal producer send....");
         producer.close();
     }
 }

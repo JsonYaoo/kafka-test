@@ -27,10 +27,14 @@ public class InterceptorConsumer {
         properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 5000);
+        /**
+         * 添加消费端拦截器属性: 可以配置多个拦截器
+         */
+        properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, CustomConsumerInterceptor.class.getName());
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
         consumer.subscribe(Collections.singletonList(Const.TOPIC_INTERCEPTOR));
-        System.err.println("quickstart consumer started...");
+        System.err.println("interceptor consumer started...");
 
         try {
             while (true){

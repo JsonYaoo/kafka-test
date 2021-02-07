@@ -30,7 +30,7 @@ public class NormalConsumer {
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
         consumer.subscribe(Collections.singletonList(Const.TOPIC_NORMAL));
-        System.err.println("quickstart consumer started...");
+        System.err.println("normal consumer started...");
 
         try {
             while (true){

@@ -50,7 +50,7 @@ public class CustomProducerInterceptor implements ProducerInterceptor<String, St
     }
 
     /**
-     * 关闭拦截器
+     * 生产者关闭拦截器
      */
     @Override
     public void close() {
@@ -66,11 +66,11 @@ public class CustomProducerInterceptor implements ProducerInterceptor<String, St
     }
 
     /**
-     * 初始化拦截器
+     * 生产者初始化拦截器
      * @param map
      */
     @Override
     public void configure(Map<String, ?> map) {
-
+        System.err.println("----------- 生产者初始化完成 ----------");
     }
 }

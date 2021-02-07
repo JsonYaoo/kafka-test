@@ -30,7 +30,7 @@ public class InterceptorProducer {
             ProducerRecord<String, String> record = new ProducerRecord<>(Const.TOPIC_INTERCEPTOR, JSON.toJSONString(user));
 
             producer.send(record);
-            System.err.println("quickstart producer send....");
+            System.err.println("interceptor producer send....");
         }
 
         producer.close();
