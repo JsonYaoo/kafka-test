@@ -1,8 +1,9 @@
-package com.jsonyao.cs.api.serial;
+package com.jsonyao.cs.api.partition;
 
 import com.jsonyao.cs.api.constant.Const;
 import com.jsonyao.cs.api.entity.User;
 import com.jsonyao.cs.api.interceptor.CustomConsumerInterceptor;
+import com.jsonyao.cs.api.serial.UserDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -16,14 +17,14 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Kafka 自定义Consumer反序列化器测试类
+ * Kafka Consumer测试类: 自定义Producer Partition
  */
-public class DeserializerConsumer {
+public class PartitionConsumer {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.1.111:9092");
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "serial-group");
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "partition-group");
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, UserDeserializer.class.getName());
         properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);
@@ -35,8 +36,8 @@ public class DeserializerConsumer {
         properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, CustomConsumerInterceptor.class.getName());
 
         KafkaConsumer<String, User> consumer = new KafkaConsumer<>(properties);
-        consumer.subscribe(Collections.singletonList(Const.TOPIC_SERIAL));
-        System.err.println("serial consumer started...");
+        consumer.subscribe(Collections.singletonList(Const.TOPIC_PARTITION));
+        System.err.println("partition consumer started...");
 
         try {
             while (true){
