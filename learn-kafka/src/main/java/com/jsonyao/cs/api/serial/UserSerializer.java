@@ -62,6 +62,9 @@ public class UserSerializer implements Serializer<User> {
             // 设置NAME属性: 字节数组长度 + 实际字节数组
             byteBuffer.putInt(nameBytes.length);
             byteBuffer.put(nameBytes);
+
+            // 返回组装好的字节数组
+            return byteBuffer.array();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
