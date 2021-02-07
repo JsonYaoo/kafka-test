@@ -16,15 +16,10 @@ import java.util.concurrent.Future;
 public class NormalProducer {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        // 1. 配置生产者启动的关键属性参数
         Properties properties = new Properties();
-        /*1.1. 连接kafka集群的服务列表，如果有多个，使用逗号进行分隔*/
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.1.111:9092");
-        /*1.2. 标记kafkaClient的ID*/
         properties.put(ProducerConfig.CLIENT_ID_CONFIG, "normal-producer");
-        /*1.3. Key序列化器: kafka用于做消息投递计算具体投递到对应的主题的哪一个partition而需要的*/
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        /*1.4. Value序列化器: 实际发送消息的内容序列化*/
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         /**
          * 1.5 消息重试机制: 重试次数(默认是0)与重试间隔?
@@ -34,10 +29,9 @@ public class NormalProducer {
          *          eg: RecordTooLargeException
          */
         properties.put(ProducerConfig.RETRIES_CONFIG, 3);
-        // 2. 传递properties属性参数集合, 构造kafka生产者对象
+
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
-        // 3. 构造消息内容: topic, 实际消息体
         User user = new User("001", "xiao xiao");
         ProducerRecord<String, String> record = new ProducerRecord<>(Const.TOPIC_NORMAL, JSON.toJSONString(user));
 
@@ -77,7 +71,6 @@ public class NormalProducer {
             }
         });
 
-        // 5. 关闭生产者
         System.err.println("quickstart producer send....");
         producer.close();
     }
