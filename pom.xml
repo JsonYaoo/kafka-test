@@ -11,6 +11,8 @@
 
     <modules>
         <module>learn-kafka</module>
+        <module>kafka-producer</module>
+        <module>kafka-consumer</module>
     </modules>
 
     <parent>
