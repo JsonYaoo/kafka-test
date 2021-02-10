@@ -4,8 +4,10 @@ import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -77,6 +79,70 @@ public class CanalTest {
      * @param entries
      */
     private static void dealEntries(List<CanalEntry.Entry> entries) {
+        for (CanalEntry.Entry entry : entries) {
+            // 如果EntryType处于事务中, 则不做任何处理
+            if(CanalEntry.EntryType.TRANSACTIONBEGIN == entry.getEntryType() || CanalEntry.EntryType.TRANSACTIONEND == entry.getEntryType()){
+                continue;
+            }
 
+            // 否则转换二进制数据为RowChange对象
+            CanalEntry.RowChange rowChange = null;
+            try {
+                rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
+            } catch (InvalidProtocolBufferException e) {
+                e.printStackTrace();
+            }
+
+            // 获取EventType
+            CanalEntry.EventType eventType = rowChange.getEventType();
+
+            // 查看内容
+            CanalEntry.Header header = entry.getHeader();
+            System.err.println(String.format("binlog[%s:%s], name[%s,%s], eventType : %s",
+                    header.getLogfileName(), header.getLogfileOffset(), header.getSchemaName(), header.getTableName(), eventType));
+
+            // 真正执行数据处理
+            List<CanalEntry.Column> beforeColumnsList = new ArrayList<>();
+            List<CanalEntry.Column> afterColumnsList = new ArrayList<>();
+            for (CanalEntry.RowData rowData : rowChange.getRowDatasList()) {
+                // 删除数据
+                if(eventType == CanalEntry.EventType.DELETE){
+                    beforeColumnsList = rowData.getBeforeColumnsList();
+                    afterColumnsList = rowData.getAfterColumnsList();// 删除时为空列表
+
+                    // 处理变化数据
+                    printColumn(beforeColumnsList);
+                    printColumn(afterColumnsList);
+                }
+                // 插入数据
+                else if(eventType == CanalEntry.EventType.INSERT){
+                    beforeColumnsList = rowData.getBeforeColumnsList();// 插入时为空列表
+                    afterColumnsList = rowData.getAfterColumnsList();
+
+                    // 处理变化数据
+                    printColumn(beforeColumnsList);
+                    printColumn(afterColumnsList);
+                }
+                // 更新数据
+                else {
+                    beforeColumnsList = rowData.getBeforeColumnsList();
+                    afterColumnsList = rowData.getAfterColumnsList();
+
+                    // 处理变化数据
+                    printColumn(beforeColumnsList);
+                    printColumn(afterColumnsList);
+                }
+            }
+        }
+    }
+
+    /**
+     * 处理变化数据
+     * @param columnsList
+     */
+    private static void printColumn(List<CanalEntry.Column> columnsList) {
+        for (CanalEntry.Column column : columnsList) {
+            System.err.println(column.getName() + ":" + column.getValue() + ", update=" + column.getUpdated() + "...");
+        }
     }
 }
